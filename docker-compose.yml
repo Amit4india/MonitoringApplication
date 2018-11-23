@@ -26,27 +26,8 @@ services:
      - "3000:3000"
     depends_on:
       - prom
-  lasso:
-    image: bfoote/lasso
-    #ports:
-    # - 8090:8090
-    volumes:
-     - lasso_data:/data
-     - lasso_config:/config
-  nginx:
-    image: nginx-auth
-    ports:
-     - 9091:80
-     - 8090:8090
-    volumes:
-     - nginx_data:/usr/local/nginx/conf
-    depends_on:
-     - prom
 
 volumes:
         prometheus_data: {}
         grafana_data: {}
         grafana_prop: {}
-        nginx_data: {}
-        lasso_data: {}
-        lasso_config: {}
