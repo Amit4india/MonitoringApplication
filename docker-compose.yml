@@ -1,0 +1,52 @@
+version: "3"
+services:
+  prom:
+    image: quay.io/prometheus/prometheus:v2.0.0
+    volumes:
+     - ./monitor/prometheus.yml:/etc/prometheus/prometheus.yml
+     - prometheus_data:/prometheus  
+    command: "--config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus"
+    ports:
+     - 9090:9090
+    depends_on:
+     - exporter
+  exporter:
+    image: prom/node-exporter:latest
+    ports:
+     - "9100:9100"
+#    network_mode: host
+  grafana:
+    image: grafana/grafana
+    environment:
+     - GF_SECURITY_ADMIN_PASSWORD=pass
+    volumes:
+     - grafana_data:/var/lib/grafana
+     - grafana_prop:/etc/grafana
+    ports:
+     - "3000:3000"
+    depends_on:
+      - prom
+  lasso:
+    image: bfoote/lasso
+    #ports:
+    # - 8090:8090
+    volumes:
+     - lasso_data:/data
+     - lasso_config:/config
+  nginx:
+    image: nginx-auth
+    ports:
+     - 9091:80
+     - 8090:8090
+    volumes:
+     - nginx_data:/usr/local/nginx/conf
+    depends_on:
+     - prom
+
+volumes:
+        prometheus_data: {}
+        grafana_data: {}
+        grafana_prop: {}
+        nginx_data: {}
+        lasso_data: {}
+        lasso_config: {}
